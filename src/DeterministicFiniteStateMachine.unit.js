@@ -26,6 +26,7 @@ const tests = {
         '00110',
         '11',
       ],
+      rejects: [],
     }
   },
   hasthree1s: {
@@ -72,21 +73,21 @@ const tests = {
   numzerosDivBy3: {
     description: {
       transitions: {
-        r0: {
-          0: 'r1',
-          1: 'r0',
+        zero_count_r0: {
+          0: 'zero_count_r1',
+          1: 'zero_count_r0',
         },
-        r1: {
-          0: 'r2',
-          1: 'r1',
+        zero_count_r1: {
+          0: 'zero_count_r2',
+          1: 'zero_count_r1',
         },
-        r2: {
-          0: 'r0',
-          1: 'r2',
+        zero_count_r2: {
+          0: 'zero_count_r0',
+          1: 'zero_count_r2',
         }
       },
-      startState: 'r0',
-      acceptStates: ['r0'],
+      startState: 'zero_count_r0',
+      acceptStates: ['zero_count_r0'],
     },
 
     tests: {
@@ -109,7 +110,7 @@ for (let i = 0; i < 20; i++) {
   if (i % 3 === 0) {
     tests.divBy3.tests.accepts.push(i.toString(2));
   } else {
-    tests.divBy3.tests.accepts.push(i.toString(2));
+    tests.divBy3.tests.rejects.push(i.toString(2));
   }
 }
 
@@ -132,11 +133,11 @@ describe('examples', () => {
         const fsm = new DeterministicFiniteStateMachine(description);
 
         for (const string of accepts) {
-          expect(fsm.accepts(string)).toEqual(true);
+          expect(`${string}: true`).toEqual(`${string}: ${fsm.accepts(string)}`);
         }
 
         for (const string of rejects) {
-          expect(fsm.accepts(string)).toEqual(false);
+          expect(`${string}: false`).toEqual(`${string}: ${fsm.accepts(string)}`);
         }
       });
     });
