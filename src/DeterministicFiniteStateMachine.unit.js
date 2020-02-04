@@ -28,6 +28,80 @@ const tests = {
       ],
     }
   },
+  hasthree1s: {
+    description: {
+      transitions: {
+        zero: {
+          0: 'zero',
+          1: 'one',
+        },
+        one: {
+          0: 'one',
+          1: 'two',
+        },
+        two: {
+          0: 'two',
+          1: 'three',
+        },
+        three: {
+          0: 'three',
+          1: 'toomany',
+        },
+        toomany: {
+          0: 'toomany',
+          1: 'toomany',
+        },
+      },
+      startState: 'zero',
+      acceptStates: ['three'],
+    },
+
+    tests: {
+      accepts: [
+        '01110',
+        '111',
+        '0101010',
+      ],
+      rejects: [
+        '011110',
+        '1111',
+        '01101010',
+      ],
+    }
+  },
+  numzerosDivBy3: {
+    description: {
+      transitions: {
+        r0: {
+          0: 'r1',
+          1: 'r0',
+        },
+        r1: {
+          0: 'r2',
+          1: 'r1',
+        },
+        r2: {
+          0: 'r0',
+          1: 'r2',
+        }
+      },
+      startState: 'r0',
+      acceptStates: ['r0'],
+    },
+
+    tests: {
+      accepts: [
+        '00110',
+        '11',
+        '01000001',
+      ],
+      rejects: [
+        '0001101',
+        '110',
+        '010000001',
+      ],
+    }
+  },
 
 };
 
