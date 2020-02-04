@@ -13,7 +13,7 @@ export default class DeterministicFiniteStateMachine {
    * @returns a string state name
    */
   transition(state, symbol) {
-    throw 'IMPLEMENT transition(state, symbol)';
+    return this.transitions[state][symbol];
   }
 
   accepts(string, state = this._startState) {
