@@ -3,7 +3,9 @@ export default class DeterministicFiniteStateMachine {
   /**
    */
   constructor({ transitions, startState, acceptStates }) {
-    throw 'IMPLEMENT constructor(description)';
+    this.transitions = transitions;
+    this.startState = startState;
+    this.acceptStates = acceptStates;
   }
 
   /**
