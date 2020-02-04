@@ -16,8 +16,10 @@ export default class DeterministicFiniteStateMachine {
     return this.transitions[state][symbol];
   }
 
-  accepts(string, state = this._startState) {
-    throw 'IMPLEMENT FiniteStateMachine.accepts';
+  accepts(string, state = this.startState) {
+    const nextState = this.transition(state, string.charAt(0));
+    return (string.length === 0) ? this.acceptStates.includes(state) :
+                                   this.accepts(string.substr(1), nextState);
   }
 
 }
