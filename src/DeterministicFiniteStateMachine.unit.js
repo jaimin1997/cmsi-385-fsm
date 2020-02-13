@@ -181,7 +181,7 @@ describe('cross product', () => {
               ...desc2.tests.rejects,
             ];
             
-            const fsm = union(dfa1, dfa2);
+            const fsm = intersection(dfa1, dfa2);
             for (const string of allTests) {
               const expectedResult = dfa1.accepts(string) && dfa2.accepts(string);
               expect(`${string}: ${fsm.accepts(string)}`).toEqual(`${string}: ${expectedResult}`);
@@ -199,7 +199,7 @@ describe('cross product', () => {
               ...desc2.tests.rejects,
             ];
             
-            const fsm = union(dfa1, dfa2);
+            const fsm = minus(dfa1, dfa2);
             for (const string of allTests) {
               const expectedResult = dfa1.accepts(string) && !dfa2.accepts(string);
               expect(`${string}: ${fsm.accepts(string)}`).toEqual(`${string}: ${expectedResult}`);
