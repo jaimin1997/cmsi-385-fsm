@@ -8,6 +8,10 @@ export default class DeterministicFiniteStateMachine {
     this.acceptStates = acceptStates;
   }
 
+  stateAccepted(state) {
+    return this.acceptStates.includes(state);
+  }
+
   /**
    *
    * @returns a string state name
@@ -18,8 +22,30 @@ export default class DeterministicFiniteStateMachine {
 
   accepts(string, state = this.startState) {
     const nextState = this.transition(state, string.charAt(0));
-    return (string.length === 0) ? this.acceptStates.includes(state) :
+    return (string.length === 0) ? this.stateAccepted(state) :
                                    this.accepts(string.substr(1), nextState);
   }
 
+}
+
+/**
+ *
+ */
+export function cross(dfa1, dfa2, acceptanceCriteria = (dfa1State, dfa2State) => true) {
+  return dfa1;
+}
+
+export function union(dfa1, dfa2) {
+  return cross(dfa1, dfa2, 
+    (dfa1State, dfa2State) => dfa1.stateAccepted(state1) || dfa2.stateAccepted(state2));
+}
+
+export function intersection(dfa1, dfa2) {
+  return cross(dfa1, dfa2, 
+    (dfa1State, dfa2State) => dfa1.stateAccepted(state1) && dfa2.stateAccepted(state2));
+}
+
+export function minus(dfa1, dfa2) {
+  return cross(dfa1, dfa2, 
+    (dfa1State, dfa2State) => dfa1.stateAccepted(state1) && !dfa2.stateAccepted(state2));
 }
