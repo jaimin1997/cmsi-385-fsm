@@ -8,6 +8,10 @@ export default class DeterministicFiniteStateMachine {
     this.acceptStates = acceptStates;
   }
 
+  states() {
+    return Object.keys(this.transitions);
+  }
+
   stateAccepted(state) {
     return this.acceptStates.includes(state);
   }
