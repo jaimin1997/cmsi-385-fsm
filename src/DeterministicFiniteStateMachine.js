@@ -36,6 +36,7 @@ export default class DeterministicFiniteStateMachine {
  *
  */
 export function cross(dfa1, dfa2, acceptanceCriteria = (dfa1State, dfa2State) => true) {
+//.... TODO
   return dfa1;
 }
 
