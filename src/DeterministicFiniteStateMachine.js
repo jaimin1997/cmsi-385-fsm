@@ -53,31 +53,31 @@ export function cross(dfa1, dfa2, accepts = (dfa1State, dfa2State) => true) {
   const transitions = {};
   const alphabet = new Set([...dfa1.alphabet(), ...dfa2.alphabet()]);
 
-  const newState = (state1, state2) => {
-    const stateName = `m1:${state1}xm2:${state2}`;
-    if(!transitions[stateName]) {
-      if(accepts(state1, state2)) acceptStates.push(stateName);
-      transitions[stateName] = {};
-    }
-    
-    return stateName;
-  };
+  // A function which returns a state name for a state in machine 1 and a state in machine 2 
+  const stateName = (state1, state2) => `m1:${state1}xm2:${state2}`;
 
-  const startState = newState(dfa1.startState, dfa2.startState);
+  const startState = stateName(dfa1.startState, dfa2.startState);
+  const unresolvedStates = [{ state: startState, state1: dfa1.startState, state2: dfa2.startState }];
 
-  for(const state1 of dfa1.states()) {
-    for(const state2 of dfa2.states()) {
-      const newStateName = newState(state1, state2);
-      transitions[newStateName] = {};
-      for(const symbol of alphabet) {
-        const nextState1 = dfa1.transition(state1, symbol);
-        const nextState2 = dfa2.transition(state2, symbol);
+  while(unresolvedStates.length > 0) {
+    const { state1, state2, state } = unresolvedStates.pop();
 
-        const nextStateName = newState(nextState1, nextState2);
-        transitions[newStateName][symbol] = nextStateName;
+    transitions[state] = {};
+    if(accepts(state1, state2)) acceptStates.push(state);
+
+    for(const symbol of alphabet) {
+      const nextState1 = dfa1.transition(state1, symbol);
+      const nextState2 = dfa2.transition(state2, symbol);
+
+      const nextState = stateName(nextState1, nextState2);
+      transitions[state][symbol] = nextState;
+
+      if(!transitions[nextState]) {
+        // recording that we need to process this state
+        unresolvedStates.push({ state: nextState, state1: nextState1, state2: nextState2 });
       }
     }
-  }
+  } 
 
   return new DeterministicFiniteStateMachine({
     acceptStates,
