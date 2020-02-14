@@ -42,15 +42,15 @@ export function cross(dfa1, dfa2, acceptanceCriteria = (dfa1State, dfa2State) =>
 
 export function union(dfa1, dfa2) {
   return cross(dfa1, dfa2, 
-    (dfa1State, dfa2State) => dfa1.stateAccepted(state1) || dfa2.stateAccepted(state2));
+   (state1, state2) => dfa1.stateAccepted(state1) || dfa2.stateAccepted(state2));
 }
 
 export function intersection(dfa1, dfa2) {
   return cross(dfa1, dfa2, 
-    (dfa1State, dfa2State) => dfa1.stateAccepted(state1) && dfa2.stateAccepted(state2));
+   (state1, state2) => dfa1.stateAccepted(state1) && dfa2.stateAccepted(state2));
 }
 
 export function minus(dfa1, dfa2) {
   return cross(dfa1, dfa2, 
-    (dfa1State, dfa2State) => dfa1.stateAccepted(state1) && !dfa2.stateAccepted(state2));
+   (state1, state2) => dfa1.stateAccepted(state1) && !dfa2.stateAccepted(state2));
 }
