@@ -100,3 +100,8 @@ export function minus(dfa1, dfa2) {
   return cross(dfa1, dfa2, 
     (state1, state2) => dfa1.stateAccepted(state1) && !dfa2.stateAccepted(state2));
 }
+
+export function minimize(dfa) {
+  // TODO return a new minimized DFA
+  return dfa;
+}
