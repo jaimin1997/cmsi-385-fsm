@@ -9,19 +9,19 @@ export default class DeterministicFiniteStateMachine {
   }
 
   alphabet() {
-    const alphabet = new Set();
-    
-    for(const [state, desc] of Object.entries(this.transitions)) {
-      for(const symbol of Object.keys(desc)) {
-        alphabet.add(symbol);
-      }
-    }
-
-    return alphabet.values();
+    return new Set(
+      Object.values(this.transitions)
+      .map(stateTransitions => Object.keys(stateTransitions))
+      .reduce((allSymbols, symbols) => [...allSymbols, ...symbols], [])
+    );
   }
 
   states() {
-    return new Set(Object.keys(this.transitions));
+    return new Set(
+      Object.entries(this.transitions)
+      .map(([state, stateTransitions]) => [state, Object.values(stateTransitions)].flat())
+      .reduce((allStates, states) => [...allStates, ...states], [])
+    );
   }
 
   stateAccepted(state) {
