@@ -1,20 +1,23 @@
-import NonDeterministicFiniteStateMachine, { LAMBDA } from './DeterministicFiniteStateMachine';
+import NonDeterministicFiniteStateMachine, { LAMBDA } from './NonDeterministicFiniteStateMachine';
 
 const tests = {
   divisibleBy4: {
     description: {
       transitions: {
         start: {
-          [LAMBDA]: ['div4'],
+          [LAMBDA]: ['zero'],
           0: ['start', 'div2'],
           1: ['start'],
         },
         div2: {
           0: ['div4'],
         },
+        zero: {
+          0: ['zero'],
+        },
       },
       startState: 'start',
-      acceptStates: ['div4'],
+      acceptStates: ['div4', 'zero'],
     },
 
     tests: {
@@ -28,7 +31,7 @@ const tests = {
       rejects: [
         '10',
         '11',
-        '1001011'
+        '1001011',
       ],
     }
   },
@@ -84,11 +87,11 @@ describe('examples', () => {
         const fsm = new NonDeterministicFiniteStateMachine(description);
 
         for (const string of accepts) {
-          expect(`${string}: true`).toEqual(`${string}: ${fsm.accepts(string)}`);
+          expect(`${string}: ${fsm.accepts(string)}`).toEqual(`${string}: true`);
         }
 
         for (const string of rejects) {
-          expect(`${string}: false`).toEqual(`${string}: ${fsm.accepts(string)}`);
+          expect(`${string}: ${!fsm.accepts(string)}`).toEqual(`${string}: false`);
         }
       });
     });

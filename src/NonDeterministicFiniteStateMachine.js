@@ -1,3 +1,7 @@
+import DeterministicFiniteStateMachine from './DeterministicFiniteStateMachine';
+
+export const LAMBDA = '';
+
 export default class NonDeterministicFiniteStateMachine extends DeterministicFiniteStateMachine {
 
   /**
@@ -13,12 +17,12 @@ export default class NonDeterministicFiniteStateMachine extends DeterministicFin
    */
   transition(state, symbol) {
     if(!this.transitions[state]) return [];
-    return super.transitions[state][symbol];
+    return this.transitions[state][symbol] || [];
   }
 
   accepts(string, state = this.startState) {
+    // TODO
     return true;
   }
-
 }
 
