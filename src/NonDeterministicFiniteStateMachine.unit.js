@@ -5,9 +5,11 @@ const tests = {
     description: {
       transitions: {
         start: {
-          [LAMBDA]: ['zero'],
-          0: ['start', 'div2'],
-          1: ['start'],
+          [LAMBDA]: ['zero', 'startWith1'],
+        },
+        startWith1: {
+          0: ['startWith1', 'div2'],
+          1: ['startWith1'],
         },
         div2: {
           0: ['div4'],
@@ -39,19 +41,24 @@ const tests = {
     description: {
       transitions: {
         start: {
-          [LAMBDA]: ['div4'],
-          0: ['start', 'div2'],
-          1: ['start'],
+          [LAMBDA]: ['zero', 'startWith1'],
+        },
+        startWith1: {
+          0: ['startWith1', 'div2'],
+          1: ['startWith1'],
         },
         div2: {
-          [LAMBDA]: ['start'],
+          [LAMBDA]: ['startWith1'],
           0: ['div4'],
+        },
+        zero: {
+          [LAMBDA]: ['start'],
+          0: ['zero'],
         },
       },
       startState: 'start',
-      acceptStates: ['div4'],
+      acceptStates: ['div4', 'zero'],
     },
-
     tests: {
       accepts: [
         '0100',
@@ -91,6 +98,7 @@ describe('examples', () => {
         }
 
         for (const string of rejects) {
+debugger
           expect(`${string}: ${fsm.accepts(string)}`).toEqual(`${string}: false`);
         }
       });
