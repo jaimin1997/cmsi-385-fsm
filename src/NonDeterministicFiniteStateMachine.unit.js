@@ -91,7 +91,7 @@ describe('examples', () => {
         }
 
         for (const string of rejects) {
-          expect(`${string}: ${!fsm.accepts(string)}`).toEqual(`${string}: false`);
+          expect(`${string}: ${fsm.accepts(string)}`).toEqual(`${string}: false`);
         }
       });
     });
