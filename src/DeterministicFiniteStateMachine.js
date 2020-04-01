@@ -9,19 +9,19 @@ export default class DeterministicFiniteStateMachine {
   }
 
   alphabet() {
-    return new Set(
-      Object.values(this.transitions)
-      .map(stateTransitions => Object.keys(stateTransitions))
-      .reduce((allSymbols, symbols) => [...allSymbols, ...symbols], [])
-    );
+    const alphabet = new Set();
+
+    for(const [state, desc] of Object.entries(this.transitions)) {
+      for(const symbol of Object.keys(desc)) {
+        alphabet.add(symbol);
+      }
+    }
+
+    return alphabet.values();
   }
 
   states() {
-    return new Set(
-      Object.entries(this.transitions)
-      .map(([state, stateTransitions]) => [state, Object.values(stateTransitions)].flat())
-      .reduce((allStates, states) => [...allStates, ...states], [])
-    );
+    return new Set(Object.keys(this.transitions));
   }
 
   stateAccepted(state) {
@@ -53,7 +53,7 @@ export function cross(dfa1, dfa2, accepts = (dfa1State, dfa2State) => true) {
   const transitions = {};
   const alphabet = new Set([...dfa1.alphabet(), ...dfa2.alphabet()]);
 
-  // A function which returns a state name for a state in machine 1 and a state in machine 2 
+  // A function which returns a state name for a state in machine 1 and a state in machine 2
   const stateName = (state1, state2) => `m1:${state1}xm2:${state2}`;
 
   const startState = stateName(dfa1.startState, dfa2.startState);
@@ -77,7 +77,7 @@ export function cross(dfa1, dfa2, accepts = (dfa1State, dfa2State) => true) {
         unresolvedStates.push({ state: nextState, state1: nextState1, state2: nextState2 });
       }
     }
-  } 
+  }
 
   return new DeterministicFiniteStateMachine({
     acceptStates,
@@ -87,21 +87,76 @@ export function cross(dfa1, dfa2, accepts = (dfa1State, dfa2State) => true) {
 }
 
 export function union(dfa1, dfa2) {
-  return cross(dfa1, dfa2, 
+  return cross(dfa1, dfa2,
     (state1, state2) => dfa1.stateAccepted(state1) || dfa2.stateAccepted(state2));
 }
 
 export function intersection(dfa1, dfa2) {
-  return cross(dfa1, dfa2, 
+  return cross(dfa1, dfa2,
     (state1, state2) => dfa1.stateAccepted(state1) && dfa2.stateAccepted(state2));
 }
 
 export function minus(dfa1, dfa2) {
-  return cross(dfa1, dfa2, 
+  return cross(dfa1, dfa2,
     (state1, state2) => dfa1.stateAccepted(state1) && !dfa2.stateAccepted(state2));
 }
 
-export function minimize(dfa) {
-  // TODO return a new minimized DFA
-  return dfa;
+export function minimize(dfa, groups = [[...dfa.states()]]) {
+  const behaviors = {};
+
+  const findGroup = state => {
+      for(const group of groups){
+          if(group.includes(state)) return group;
+      }
+  };
+const behaviourkey = state => {
+  let behaviorString = `accepted=${dfa.stateAccepted(state)}`;
+
+  for(const symbol of dfa.alphabet()) {
+    const nextState =  dfa.transition(state, symbol);
+
+    const group = findGroup(nextState);
+    behaviorString = `${behaviorString}, ${symbol}+ ${group.join('-')}`;
+  }
+  return behaviorString
+};
+
+  for(const state of dfa.states()) {
+    const key = behaviourkey(state);
+    if(!behaviors[key]) behaviors[key] = [];
+    behaviors[key].push(state);
+  }
+  const newGroups = Object.values(behaviors);
+
+  if(newGroups.length === groups.length) {
+    const transitions={};
+    const acceptStates=[];
+
+    const needsTransitions = [findGroup(dfa.startState)];
+
+    while(needsTransitions.length>0) {
+      const group = needsTransitions.pop();
+
+      const state = group.join('-');
+      if(dfa.stateAccepted(group[0])) acceptStates.push(state);
+      transitions[state] = {};
+
+      for(const symbol of dfa.alphabet()){
+        const nextState = dfa.transition(group[0],symbol);
+        const nextStateGroup = findGroup(nextState);
+        const newNextState= nextStateGroup.join('-');
+
+        transitions[state][symbol] =  newNextState;
+
+        if(!transitions[newNextState]) needsTransitions.push(nextStateGroup);
+
+
+      }
+    }
+
+    const startState = findGroup(dfa.startState).join('-');
+    return new DeterministicFiniteStateMachine({transitions, startState, acceptStates});
+} else {
+  return minimize(dfa, newGroups);
+}
 }
